@@ -1,3 +1,20 @@
+WebApp
+======
+
+Simplest WebApp with static page.
+ 
+Build
+-----
+
+    docker build -t example/webapp webapp
+    
+Run
+---
+
+    docker run --name webapp -P -d example/webapp
+    
+
+
 Balancer
 ========
 
@@ -12,5 +29,6 @@ Run
 ---
     
     docker run -p 80:80 -v $PWD/etc/nginx/upstreams:/etc/nginx/upstreams:ro \
-        --name balancer --rm example/balancer
+        --name balancer -d example/balancer
      
+
