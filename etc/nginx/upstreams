@@ -1,0 +1,4 @@
+upstream webapp {
+    # put upstream definitions here
+    server 172.17.0.4:5000;
+}
