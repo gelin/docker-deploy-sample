@@ -8,7 +8,7 @@
   post_tasks:
     - name: add local insecure registry
       lineinfile: dest=/etc/default/docker
-                  line="DOCKER_OPTS='--insecure-registry 192.168.200.100:5000'"
+                  line="DOCKER_OPTS='--insecure-registry {{ docker_registry }}'"
     - name: restart docker
       service: name=docker state=restarted
 
