@@ -1,0 +1,25 @@
+- hosts: server
+  tasks:
+  - name: create directory for ansible custom facts
+    sudo: yes
+    file: state=directory recurse=yes path=/etc/ansible/facts.d
+  - name: install custom cleaning_containers fact
+    sudo: yes
+    copy: src=../facts.d/cleaning_containers.fact dest=/etc/ansible/facts.d/ mode=0555
+  - name: re-read facts after installing custom facts
+    setup: filter=ansible_local
+  - name: remove webapp container
+    with_items: "{{ ansible_local.cleaning_containers.containers }}"
+    docker:
+      docker_api_version: "1.18"
+      name: "{{ item.name }}"
+      image: "{{ docker_registry }}/example/webapp"
+      state: absent
+  - name: re-read facts after removing containers
+    setup: filter=ansible_local
+  - name: update HAProxy config
+    sudo: yes
+    template: src=../templates/haproxy.cfg.j2 dest=/etc/haproxy/haproxy.cfg
+  - name: touch HAProxy config
+    sudo: yes
+    file: path=/etc/haproxy/haproxy.cfg state=touch

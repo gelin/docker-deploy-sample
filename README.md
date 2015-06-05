@@ -161,4 +161,8 @@ Check the containers running and balancing.
     
 The balancer is already configured correctly.
     
+When you're ready to kill the unused WebApp containers do it.
     
+    cd ansible
+    ansible-playbook playbooks/clean_webapp.yml
+
