@@ -14,5 +14,11 @@
       state: started
       count: 2
       pull: always
-  - name: re-read facts after adding custom fact
+  - name: re-read facts after running a new container
     setup: filter=ansible_local
+  - name: update HAProxy config
+    sudo: yes
+    template: src=../templates/haproxy.cfg.j2 dest=/etc/haproxy/haproxy.cfg
+  - name: touch HAProxy config
+    sudo: yes
+    file: path=/etc/haproxy/haproxy.cfg state=touch

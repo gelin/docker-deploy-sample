@@ -5,10 +5,11 @@
 echo "{ \"containers\": ["
 sep=" "
 balance="check"
-for i in $(docker ps | tail -n +2 | grep -v balancer | cut -f1 -d " ");
+for id in $(docker ps | tail -n +2 | grep -v balancer | cut -f1 -d " ");
 do
-    info="$(docker inspect --format='"name": "{{.Name}}", "ip": "{{.NetworkSettings.IPAddress}}" ' $i)"
-    echo "$sep { \"id\": \"$i\", $info, \"balance\": \"$balance\" } "
+    name="$(docker inspect --format='{{.Name}}' $id)"
+    ip="$(docker inspect --format='{{.NetworkSettings.IPAddress}}' $id)"
+    echo "$sep { \"id\": \"$id\", \"name\": \"$(basename $name)\", \"ip\": \"$ip\", \"balance\": \"$balance\" } "
     sep=","
     balance="disabled"
 done
