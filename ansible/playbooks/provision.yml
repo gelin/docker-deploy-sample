@@ -9,6 +9,9 @@
     - name: add local insecure registry
       lineinfile: dest=/etc/default/docker
                   line="DOCKER_OPTS='--insecure-registry {{ docker_registry }}'"
+    - name: "fix bug in ansible/upstart: https://github.com/ansible/ansible-modules-core/issues/1170"
+      sudo: yes
+      file: path=/etc/init.d/docker state=absent
     - name: restart docker
       service: name=docker state=restarted
 
@@ -20,9 +23,6 @@
   - name: apt-get update
     sudo: yes
     apt: update_cache=yes
-#   - name: "fix bug in ansible/upstart: https://github.com/ansible/ansible-modules-core/issues/1170"
-#     sudo: yes
-#     file: path=/etc/init.d/docker.io state=absent
   - name: install docker-py
     sudo: yes
     pip: name=docker-py version=1.1.0
