@@ -4,7 +4,7 @@
   roles:
   - role: znzj.rbenv
     rbenv_ruby_version: 2.1.3
-  - role: docker.ubuntu
+  - role: angstwad.docker_ubuntu
   post_tasks:
     - name: add local insecure registry
       lineinfile: dest=/etc/default/docker
