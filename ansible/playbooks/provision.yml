@@ -46,6 +46,7 @@
       docker_api_version: "1.18"
       name: balancer
       image: "{{ docker_registry }}/example/balancer:latest"
+      insecure_registry: yes
       state: restarted
       ports:
       - "80:80"

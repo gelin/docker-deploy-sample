@@ -1,0 +1,15 @@
+#!/bin/sh
+
+#TODO make it Ansible module
+
+echo "{ \"containers\": ["
+sep=" "
+balance="check"
+for i in $(docker ps | tail -n +2 | grep -v balancer | cut -f1 -d " ");
+do
+    info="$(docker inspect --format='"name": "{{.Name}}", "ip": "{{.NetworkSettings.IPAddress}}" ' $i)"
+    echo "$sep { \"id\": \"$i\", $info, \"balance\": \"$balance\" } "
+    sep=","
+    balance="disabled"
+done
+echo "] }"
