@@ -1,0 +1,24 @@
+- hosts: server
+  tasks:
+  - name: create directory for ansible custom facts
+    sudo: yes
+    file: state=directory recurse=yes path=/etc/ansible/facts.d
+  - name: install custom balancing_containers fact
+    sudo: yes
+    copy: src=../facts.d/balancing_containers.fact dest=/etc/ansible/facts.d/ mode=0555
+  - name: install webapp
+    docker:
+      docker_api_version: "1.18"
+      image: "{{ docker_registry }}/example/webapp:latest"
+      insecure_registry: yes
+      state: started
+      count: 2
+      pull: always
+  - name: re-read facts after running a new container
+    setup: filter=ansible_local
+  - name: update HAProxy config
+    sudo: yes
+    template: src=../templates/haproxy.cfg.j2 dest=/etc/haproxy/haproxy.cfg
+  - name: touch HAProxy config
+    sudo: yes
+    file: path=/etc/haproxy/haproxy.cfg state=touch

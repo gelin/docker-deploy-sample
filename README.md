@@ -9,6 +9,8 @@ Run it.
 
     cd vagrant
     vagrant up
+
+Build and push the balancer Docker image (see below).    
     
 Install [Ansible](http://docs.ansible.com/intro_installation.html) 
 to provision the machine.
@@ -27,13 +29,18 @@ It also correctly reloads HAProxy without breaking existing connections when the
 
 Based on this: https://github.com/million12/docker-haproxy
 
-Build
------
+Build and push
+--------------
 
     docker build -t example/balancer balancer
+    
+The image must be placed into the repository before provisioning the VDS machine.
 
-Run
----
+    docker tag example/balancer 192.168.200.100:5000/example/balancer
+    docker push 192.168.200.100:5000/example/balancer
+
+Run manually
+------------
     
     docker run -p 80:80 -v $PWD/etc/haproxy/:/etc/haproxy/:ro \
         --name balancer -d example/balancer
@@ -43,18 +50,23 @@ WebApp
 
 Simplest WebApp with static page.
  
-Build
------
+Build and push
+--------------
 
     docker build -t example/webapp webapp
     
-Run
----
+The image must be placed into the repository before provisioning the VDS machine.
+
+    docker tag example/webapp 192.168.200.100:5000/example/webapp
+    docker push 192.168.200.100:5000/example/webapp    
+    
+Run manually
+------------
 
     docker run --name webapp1 -d example/webapp
     
-Balancing
-================
+Balancing manually
+==================
 
 You need to find out the internal IP address of the just run WebApp container.
 
@@ -107,4 +119,50 @@ Now it's safe to remove `webapp1` from the balancing.
     ...
     backend webapps
         server webapp2 172.17.0.41:80 check
+
+Deploying webapp
+================
                
+When the VDS is provisioned, balancer is installed, it's time to deploy WebApp.
+
+Firstly, build and push the latest WebApp (see above).
+
+Then deploy it.
+               
+    cd ansible
+    ansible-playbook playbooks/deploy_webapp.yml
+                        
+Check the containers running and balancing.
+
+    % ansible server -m setup -a "filter=ansible_local"
+    10.40.20.2 | success >> {
+        "ansible_facts": {
+            "ansible_local": {
+                "balancing_containers": {
+                    "containers": [
+                        {
+                            "balance": "check", 
+                            "id": "4e20509395de", 
+                            "ip": "172.17.0.3", 
+                            "name": "/dreamy_poincare"
+                        }, 
+                        {
+                            "balance": "disabled", 
+                            "id": "f0a79720ed2a", 
+                            "ip": "172.17.0.2", 
+                            "name": "/silly_bardeen"
+                        }
+                    ]
+                }
+            }
+        }, 
+        "changed": false
+    }
+    
+The balancer is already configured correctly.
+    
+When you're ready to kill the unused WebApp containers do it.
+    
+    cd ansible
+    ansible-playbook playbooks/clean_webapp.yml
+
