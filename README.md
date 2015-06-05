@@ -15,7 +15,7 @@ Build
 Run
 ---
     
-    docker run -p 80:80 -v $PWD/etc/haproxy/haproxy.cfg:/etc/haproxy/haproxy.cfg:ro \
+    docker run -p 80:80 -v $PWD/etc/haproxy/:/etc/haproxy/:ro \
         --name balancer -d example/balancer
 
 WebApp
