@@ -1,0 +1,44 @@
+---
+- hosts: server
+  tasks:
+  - name: apt-get update
+    sudo: yes
+    apt: update_cache=yes
+  - name: install docker
+    sudo: yes
+    apt: name=docker.io
+  - name: "fix bug in ansible/upstart: https://github.com/ansible/ansible-modules-core/issues/1170"
+    sudo: yes
+    file: path=/etc/init.d/docker.io state=absent
+  - name: install pip
+    sudo: yes
+    easy_install: name=pip
+  - name: install docker-py
+    sudo: yes
+    pip: name=docker-py version=1.1.0
+  - name: add user vagrant to docker group
+    sudo: yes
+    user: name=vagrant groups=vagrant,sudo,docker
+#  - name: change options for docker daemon
+#    sudo: yes
+#    lineinfile: dest=/etc/default/docker.io line='DOCKER_OPTS="--tlsverify=false"'
+  - name: restart docker
+    sudo: yes
+    service: name=docker.io state=restarted
+  - name: create /etc/haproxy
+    sudo: yes
+    file: path=/etc/haproxy state=directory
+  - name: copy balancer config
+    sudo: yes
+    copy: src=../../etc/haproxy/haproxy.cfg dest=/etc/haproxy/haproxy.cfg
+  - name: install balancer
+    docker:
+      docker_api_version: "1.12"
+      name: balancer
+      image: "{{ docker_registry }}/example/balancer:latest"
+      insecure_registry: yes
+      state: restarted
+      ports:
+      - "80:80"
+      volumes:
+      - /etc/haproxy/:/etc/haproxy/

@@ -13,9 +13,10 @@ Run it.
 Install [Ansible](http://docs.ansible.com/intro_installation.html) 
 to provision the machine.
 
-Install all necessary packages.
+Install all necessary packages and balancer container.
 
-    ansible TBD
+    cd ansible
+    ansible-playbook playbooks/provision.yml
 
 Balancer
 ========

@@ -1,0 +1,7 @@
+[server]
+10.40.20.2 secret_name=vds
+
+[server:vars]
+ansible_ssh_user=vagrant
+ansible_ssh_pass=vagrant
+docker_registry=192.168.200.100:5000
