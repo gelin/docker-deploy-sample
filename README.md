@@ -1,3 +1,22 @@
+Set up a sample VDS
+===================
+
+Install [Vagrant](http://www.vagrantup.com/downloads.html)
+and [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
+to run the sample VDS machine.
+
+Run it.
+
+    cd vagrant
+    vagrant up
+    
+Install [Ansible](http://docs.ansible.com/intro_installation.html) 
+to provision the machine.
+
+Install all necessary packages.
+
+    ansible TBD
+
 Balancer
 ========
 
